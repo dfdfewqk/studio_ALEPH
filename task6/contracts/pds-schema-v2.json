@@ -1,0 +1,15 @@
+{
+  "version":"2.0",
+  "timezone":"Asia/Seoul",
+  "duration_unit":"minutes",
+  "tables":{
+    "plans":{"primary_key":"id","fields":{"id":"uuid","title":"text","start_date":"date","end_date":"date","priority":"text","success_criteria":"text","estimated_minutes":"integer","created_at":"timestamptz","updated_at":"timestamptz"}},
+    "plan_history":{"primary_key":"id","fields":{"id":"uuid","plan_id":"uuid","title":"text","start_date":"date","end_date":"date","priority":"text","success_criteria":"text","estimated_minutes":"integer","changed_at":"timestamptz"}},
+    "tasks":{"primary_key":"id","fields":{"id":"uuid","plan_id":"uuid","title":"text","description":"text|null","due_date":"date|null","priority":"text","tag":"text|null","estimated_minutes":"integer","status":"todo|completed","created_at":"timestamptz","updated_at":"timestamptz","deleted_at":"timestamptz|null","completion_version":"integer"}},
+    "execution_records":{"primary_key":"id","fields":{"id":"uuid","task_id":"uuid","started_at":"timestamptz","ended_at":"timestamptz","actual_minutes":"integer","blocked_reason":"text|null","created_at":"timestamptz"}},
+    "completion_events":{"primary_key":"id","fields":{"id":"uuid","task_id":"uuid","completion_version":"integer","completed_at":"timestamptz"}},
+    "reflections":{"primary_key":"id","fields":{"id":"uuid","plan_id":"uuid","improvement":"text","created_at":"timestamptz","next_plan_id":"uuid|null"}}
+  },
+  "relationships":["plans 1:N plan_history","plans 1:N tasks","tasks 1:N execution_records","tasks 1:N completion_events","plans 1:N reflections","reflections N:1 plans via next_plan_id"],
+  "rules":["estimated_minutes and actual_minutes are integer minutes","overdue comparisons use Asia/Seoul","deleted tasks use deleted_at and are excluded from normal lists and review aggregation","plan updates snapshot OLD values into plan_history","completion uses complete_task RPC and completion_events unique(task_id, completion_version)"]
+}
